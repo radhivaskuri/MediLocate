@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pharmacy Dashboard | MediLocate</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+        }
+
+        .pharmacy-header {
+            background: white;
+            padding: 20px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .brand {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logout {
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            background: #f1f1f1;
+        }
+
+        .pharmacy-dashboard {
+            padding: 50px 8%;
+        }
+
+        .welcome {
+            margin-bottom: 35px;
+        }
+
+        .welcome h1 {
+            font-size: 34px;
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            color: #666;
+        }
+
+        .pharmacy-info {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+        }
+
+        .pharmacy-info h2 {
+            margin-top: 0;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status.verified {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status.suspended {
+            background: #e2e3e5;
+            color: #41464b;
+        }
+
+        .rejection-box {
+            margin-top: 18px;
+            padding: 18px;
+            background: #fff0f1;
+            border-left: 5px solid #dc3545;
+            border-radius: 10px;
+        }
+
+        .rejection-box h3 {
+            margin: 0 0 8px 0;
+            color: #721c24;
+            font-size: 17px;
+        }
+
+        .rejection-box p {
+            margin: 0;
+            color: #721c24;
+            line-height: 1.6;
+        }
+
+        .reapply-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            background: #1769aa;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .reapply-btn:hover {
+            background: #125589;
+        }
+
+        .suspension-box {
+            margin-top: 18px;
+            padding: 18px;
+            background: #f1f1f1;
+            border-left: 5px solid #6c757d;
+            border-radius: 10px;
+        }
+
+        .suspension-box h3 {
+            margin: 0 0 8px 0;
+            color: #41464b;
+            font-size: 17px;
+        }
+
+        .suspension-box p {
+            margin: 0;
+            color: #41464b;
+            line-height: 1.6;
+        }
+
+        .suspension-note {
+            margin-top: 12px !important;
+            font-size: 14px;
+            color: #666 !important;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .dashboard-card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+        }
+
+        .dashboard-card h3 {
+            margin-top: 0;
+        }
+
+        .dashboard-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .dashboard-card a {
+            display: inline-block;
+            margin-top: 12px;
+            text-decoration: none;
+            color: #1769aa;
+            font-weight: bold;
+        }
+
+        .dashboard-card a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 800px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pharmacy-dashboard {
+                padding: 30px 5%;
+            }
+
+            .pharmacy-header {
+                padding: 18px 5%;
+            }
+
+            .welcome h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="pharmacy-header">
+        <div class="brand">✚ MediLocate</div>
+
+        <a href="{{ url_for('logout') }}" class="logout">
+            Logout
+        </a>
+    </header>
+
+    <main class="pharmacy-dashboard">
+
+        <section class="welcome">
+            <h1>Welcome, {{ first_name }} 👋</h1>
+            <p>Manage your pharmacy and medicine inventory.</p>
+        </section>
+
+        {% if pharmacy %}
+
+        <section class="pharmacy-info">
+
+            <h2>🏪 {{ pharmacy.name }}</h2>
+
+            <p>
+                <strong>Address:</strong>
+                {{ pharmacy.address }}
+            </p>
+
+            <p>
+                <strong>License:</strong>
+                {{ pharmacy.license_number }}
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                <span class="status {{ pharmacy.verification_status }}">
+                    {{ pharmacy.verification_status|capitalize }}
+                </span>
+            </p>
+
+            <!-- REJECTED -->
+            {% if pharmacy.verification_status == "rejected" %}
+
+                <div class="rejection-box">
+                    <h3>❌ Verification Rejected</h3>
+
+                    {% if pharmacy.rejection_reason %}
+                        <p>
+                            <strong>Reason:</strong>
+                            {{ pharmacy.rejection_reason }}
+                        </p>
+                    {% else %}
+                        <p>
+                            Your pharmacy verification was rejected.
+                            Please review your submitted information
+                            and reapply for verification.
+                        </p>
+                    {% endif %}
+                </div>
+
+                <form
+                    method="POST"
+                    action="{{ url_for('reapply_verification') }}"
+                    enctype="multipart/form-data"
+                >
+                    <input
+                        type="hidden"
+                        name="csrf_token"
+                        value="{{ csrf_token() }}"
+                    >
+
+                    <label for="license_document">
+                        📄 Upload New License Document
+                    </label>
+
+                    <br><br>
+
+                    <input
+                        type="file"
+                        id="license_document"
+                        name="license_document"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                    >
+
+                    <p>
+                        Accepted formats: PDF, JPG, JPEG, PNG.
+                    </p>
+
+                    <button type="submit" class="reapply-btn">
+                        🔄 Reapply for Verification
+                    </button>
+                </form>
+
+            <!-- PENDING -->
+            {% elif pharmacy.verification_status == "pending" %}
+
+                <p style="margin-top: 12px; color: #856404;">
+                    ⏳ Your pharmacy is waiting for admin verification.
+                </p>
+
+            <!-- VERIFIED -->
+            {% elif pharmacy.verification_status == "verified" %}
+
+                <p style="margin-top: 12px; color: #155724;">
+                    ✅ Your pharmacy has been verified.
+                </p>
+
+            <!-- SUSPENDED -->
+            {% elif pharmacy.verification_status == "suspended" %}
+
+                <div class="suspension-box">
+                    <h3>🚫 Pharmacy Suspended</h3>
+
+                    {% if pharmacy.suspension_reason %}
+                        <p>
+                            <strong>Reason:</strong>
+                            {{ pharmacy.suspension_reason }}
+                        </p>
+                    {% else %}
+                        <p>
+                            Your pharmacy has been temporarily suspended
+                            by the administrator.
+                        </p>
+                    {% endif %}
+
+                    <p class="suspension-note">
+                        Your pharmacy is currently not visible to customers.
+                        Upload your corrected license document for review.
+                    </p>
+                </div>
+
+                <form
+                    method="POST"
+                    action="{{ url_for('reapply_verification') }}"
+                    enctype="multipart/form-data"
+                    style="margin-top: 18px;"
+                >
+                    <input
+                        type="hidden"
+                        name="csrf_token"
+                        value="{{ csrf_token() }}"
+                    >
+
+                    <label
+                        for="suspended_license_document"
+                        style="display: block; font-weight: 600; margin-bottom: 8px;"
+                    >
+                        📄 Upload Corrected License Document
+                    </label>
+
+                    <input
+                        type="file"
+                        id="suspended_license_document"
+                        name="license_document"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                    >
+
+                    <p style="font-size: 13px; color: #666;">
+                        Accepted formats: PDF, JPG, JPEG, PNG.
+                    </p>
+
+                    <button type="submit" class="reapply-btn">
+                        🔄 Submit for Review
+                    </button>
+                </form>
+
+            {% endif %}
+
+        </section>
+
+        {% endif %}
+
+        <section class="dashboard-grid">
+
+            <!-- INVENTORY -->
+            <div class="dashboard-card">
+                <h3>💊 Medicine Inventory</h3>
+                <p>
+                    Add medicines, update stock quantities,
+                    and manage availability.
+                </p>
+                <a href="{{ url_for('inventory') }}">
+                    Manage inventory →
+                </a>
+            </div>
+
+            <!-- RESERVATIONS -->
+            <div class="dashboard-card">
+                <h3>📋 Reservations</h3>
+                <p>
+                    View medicine reservations made
+                    by customers and manage their requests.
+                </p>
+                <a href="{{ url_for('pharmacy_reservations') }}">
+                    View reservations →
+                </a>
+            </div>
+
+            <!-- ACTIVITY -->
+            <div class="dashboard-card">
+                <h3>📊 Pharmacy Activity</h3>
+                <p>
+                    Monitor your pharmacy's inventory
+                    and customer activity.
+                </p>
+                <a href="{{ url_for('pharmacy_activity') }}">
+                    View activity →
+                </a>
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>

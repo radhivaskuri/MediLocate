@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard - MediLocate</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+
+        body {
+            margin: 0;
+            background: #f5f7fb;
+            font-family: Arial, sans-serif;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .admin-header {
+            margin-bottom: 30px;
+        }
+
+        .admin-header h1 {
+            margin-bottom: 8px;
+            color: #222;
+        }
+
+        .admin-header p {
+            color: #666;
+        }
+
+        .pharmacy-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .pharmacy-card h2 {
+            margin-bottom: 15px;
+            color: #1769aa;
+        }
+
+        .pharmacy-info {
+            margin: 10px 0;
+            color: #444;
+        }
+
+        /* STATUS */
+
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .verified {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .suspended {
+            background: #e2e3e5;
+            color: #41464b;
+        }
+
+        /* STATUS MESSAGE */
+
+        .status-message {
+            margin-top: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .pending-message {
+            background: #fff8e1;
+            color: #856404;
+        }
+
+        .verified-message {
+            background: #eaf7ed;
+            color: #155724;
+        }
+
+        .rejected-message {
+            background: #fff0f1;
+            color: #721c24;
+        }
+
+        .suspended-message {
+            background: #f0f0f0;
+            color: #41464b;
+        }
+
+        /* ACTION BUTTONS */
+
+        .action-buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-buttons form {
+            display: inline;
+        }
+
+        .action-buttons button {
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .approve-btn {
+            background: #198754;
+            color: white;
+        }
+
+        .approve-btn:hover {
+            background: #157347;
+        }
+
+        .reject-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .reject-btn:hover {
+            background: #bb2d3b;
+        }
+
+        .suspend-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .suspend-btn:hover {
+            background: #5c636a;
+        }
+
+        .restore-btn {
+            background: #1769aa;
+            color: white;
+        }
+
+        .restore-btn:hover {
+            background: #125589;
+        }
+
+        /* SUSPENSION FORM */
+
+        .suspension-form {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .suspension-reason-input {
+            width: 100%;
+            min-height: 90px;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            resize: vertical;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .suspension-reason-input:focus {
+            outline: none;
+            border-color: #6c757d;
+        }
+
+        /* LICENSE */
+
+        .license-section {
+            margin: 16px 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .license-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: #f1f5ff;
+            color: #2563eb;
+            border: 1px solid #c7d2fe;
+            border-radius: 9px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .license-btn:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+        .license-filename {
+            color: #777;
+            font-size: 12px;
+            max-width: 280px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .license-missing {
+            color: #888;
+            font-size: 14px;
+        }
+
+        /* REJECTION MODAL */
+
+        .reject-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reject-modal.active {
+            display: flex;
+        }
+
+        .reject-modal-box {
+            width: 90%;
+            max-width: 500px;
+            background: white;
+            border-radius: 14px;
+            padding: 25px;
+            box-sizing: border-box;
+        }
+
+        .reject-modal-box h3 {
+            margin-top: 0;
+            color: #222;
+        }
+
+        .reject-modal-box p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .reject-reason-input {
+            width: 100%;
+            min-height: 120px;
+            box-sizing: border-box;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            resize: vertical;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        .reject-reason-input:focus {
+            outline: none;
+            border-color: #dc3545;
+        }
+
+        .reject-modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .cancel-reject-btn {
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #e9ecef;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .confirm-reject-btn {
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #dc3545;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* EMPTY STATE */
+
+        .empty-message {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            color: #666;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 650px) {
+
+            .admin-container {
+                margin: 20px auto;
+                padding: 15px;
+            }
+
+            .pharmacy-card {
+                padding: 20px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .action-buttons button {
+                width: 100%;
+            }
+
+            .reject-modal-box {
+                width: 92%;
+            }
+
+            .reject-modal-actions {
+                flex-direction: column;
+            }
+
+            .cancel-reject-btn,
+            .confirm-reject-btn {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="admin-container">
+
+
+    <!-- HEADER -->
+
+    <div class="admin-header">
+
+        <h1>
+            Admin Dashboard
+        </h1>
+
+        <p>
+            Manage and verify registered pharmacies.
+        </p>
+
+    </div>
+
+
+    {% if pharmacies %}
+
+
+        {% for pharmacy in pharmacies %}
+
+
+        <!-- PHARMACY CARD -->
+
+        <div class="pharmacy-card">
+
+
+            <h2>
+                {{ pharmacy.name }}
+            </h2>
+
+
+            <p class="pharmacy-info">
+
+                <strong>Owner:</strong>
+
+                {{ pharmacy.first_name }}
+                {{ pharmacy.last_name }}
+
+            </p>
+
+
+            <p class="pharmacy-info">
+
+                <strong>Email:</strong>
+
+                {{ pharmacy.email }}
+
+            </p>
+
+
+            <p class="pharmacy-info">
+
+                <strong>Phone:</strong>
+
+                {{ pharmacy.phone }}
+
+            </p>
+
+
+            <p class="pharmacy-info">
+
+                <strong>Address:</strong>
+
+                {{ pharmacy.address }}
+
+            </p>
+
+
+            <p class="pharmacy-info">
+
+                <strong>License Number:</strong>
+
+                {{ pharmacy.license_number }}
+
+            </p>
+
+
+            <!-- LICENSE DOCUMENT -->
+
+            {% if pharmacy.license_document %}
+
+                <div class="license-section">
+
+                    <a
+                        href="{{ url_for('view_license', pharmacy_id=pharmacy.id) }}"
+                        target="_blank"
+                        class="license-btn"
+                    >
+                        📄 View License
+                    </a>
+
+                    <span class="license-filename">
+                        {{ pharmacy.license_document }}
+                    </span>
+
+                </div>
+
+            {% else %}
+
+                <p class="license-missing">
+                    ⚠️ License document not uploaded
+                </p>
+
+            {% endif %}
+
+
+            <!-- STATUS -->
+
+            <p class="pharmacy-info">
+
+                <strong>Status:</strong>
+
+                <span class="status {{ pharmacy.verification_status }}">
+
+                    {{ pharmacy.verification_status|capitalize }}
+
+                </span>
+
+            </p>
+
+
+            <!-- PENDING -->
+
+            {% if pharmacy.verification_status == "pending" %}
+
+
+                <div class="status-message pending-message">
+
+                    ⏳ This pharmacy is waiting for admin verification.
+
+                </div>
+
+
+                <div class="action-buttons">
+
+
+                    <!-- APPROVE -->
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'verify_pharmacy',
+                            pharmacy_id=pharmacy.id
+                        ) }}"
+                    >
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                        <button
+                            type="submit"
+                            class="approve-btn"
+                        >
+                            ✓ Approve
+                        </button>
+
+                    </form>
+
+
+                    <!-- REJECT -->
+
+                    <button
+                        type="button"
+                        class="reject-btn"
+                        onclick="openRejectModal('{{ pharmacy.id }}')"
+                    >
+                        ✕ Reject
+                    </button>
+
+
+                </div>
+
+
+                <!-- REJECTION MODAL -->
+
+                <div
+                    id="rejectModal{{ pharmacy.id }}"
+                    class="reject-modal"
+                >
+
+                    <div class="reject-modal-box">
+
+                        <h3>
+                            Reject Pharmacy
+                        </h3>
+
+                        <p>
+
+                            Enter the reason for rejecting
+                            <strong>{{ pharmacy.name }}</strong>.
+
+                        </p>
+
+
+                        <form
+                            method="POST"
+                            action="{{ url_for(
+                                'reject_pharmacy',
+                                pharmacy_id=pharmacy.id
+                            ) }}"
+                        >
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <textarea
+                                name="rejection_reason"
+                                class="reject-reason-input"
+                                placeholder="Enter the reason for rejection..."
+                                required
+                            ></textarea>
+
+
+                            <div class="reject-modal-actions">
+
+
+                                <button
+                                    type="button"
+                                    class="cancel-reject-btn"
+                                    onclick="closeRejectModal('{{ pharmacy.id }}')"
+                                >
+                                    Cancel
+                                </button>
+
+
+                                <button
+                                    type="submit"
+                                    class="confirm-reject-btn"
+                                >
+                                    Reject Pharmacy
+                                </button>
+
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+
+            <!-- VERIFIED -->
+
+            {% elif pharmacy.verification_status == "verified" %}
+
+
+                <div class="status-message verified-message">
+
+                    ✅ This pharmacy is currently verified
+                    and visible to customers.
+
+                </div>
+
+
+                <div class="action-buttons">
+
+
+                    <!-- SUSPEND -->
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'suspend_pharmacy',
+                            pharmacy_id=pharmacy.id
+                        ) }}"
+                        class="suspension-form"
+                    >
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <textarea
+                            name="suspension_reason"
+                            class="suspension-reason-input"
+                            placeholder="Enter the reason for suspending this pharmacy..."
+                            required
+                        ></textarea>
+
+
+                        <button
+                            type="submit"
+                            class="suspend-btn"
+                            onclick="return confirm(
+                                'Are you sure you want to suspend this pharmacy?'
+                            );"
+                        >
+                            🚫 Suspend Pharmacy
+                        </button>
+
+                    </form>
+
+
+                </div>
+
+
+            <!-- REJECTED -->
+
+            {% elif pharmacy.verification_status == "rejected" %}
+
+
+                <div class="status-message rejected-message">
+
+                    ❌ This pharmacy was rejected.
+
+                    The pharmacy can reapply
+                    for verification from its dashboard.
+
+                </div>
+
+
+            <!-- SUSPENDED -->
+
+            {% elif pharmacy.verification_status == "suspended" %}
+
+
+                <div class="status-message suspended-message">
+
+                    🚫 This pharmacy has been suspended.
+
+                    It is currently hidden from customers.
+
+                </div>
+
+
+                <div class="action-buttons">
+
+
+                    <!-- RESTORE -->
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'restore_pharmacy',
+                            pharmacy_id=pharmacy.id
+                        ) }}"
+                        onsubmit="return confirm(
+                            'Are you sure you want to restore this pharmacy?'
+                        );"
+                    >
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button
+                            type="submit"
+                            class="restore-btn"
+                        >
+                            ✓ Restore Pharmacy
+                        </button>
+
+                    </form>
+
+
+                </div>
+
+
+            {% endif %}
+
+
+        </div>
+
+
+        {% endfor %}
+
+
+    {% else %}
+
+
+        <div class="empty-message">
+
+            <h3>
+                No Pharmacies Registered
+            </h3>
+
+            <p>
+                There are currently no pharmacy registrations
+                to review.
+            </p>
+
+        </div>
+
+
+    {% endif %}
+
+
+</div>
+
+
+<script>
+
+    function openRejectModal(pharmacyId) {
+
+        var modal = document.getElementById(
+            "rejectModal" + pharmacyId
+        );
+
+        if (modal) {
+
+            modal.classList.add("active");
+
+        }
+
+    }
+
+
+    function closeRejectModal(pharmacyId) {
+
+        var modal = document.getElementById(
+            "rejectModal" + pharmacyId
+        );
+
+        if (modal) {
+
+            modal.classList.remove("active");
+
+        }
+
+    }
+
+</script>
+
+
+</body>
+
+</html>

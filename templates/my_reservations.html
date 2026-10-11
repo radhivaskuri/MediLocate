@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Reservations - MediLocate</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #222;
+        }
+
+        /* NAVBAR */
+
+        .navbar {
+            background: white;
+            padding: 18px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+            color: #1769aa;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: #1769aa;
+            font-weight: bold;
+        }
+
+        /* CONTAINER */
+
+        .container {
+            max-width: 1050px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .heading {
+            margin-bottom: 30px;
+        }
+
+        .heading h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .heading p {
+            color: #666;
+        }
+
+        /* RESERVATION CARD */
+
+        .reservation-card {
+            background: white;
+            padding: 28px;
+            border-radius: 18px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+            border: 1px solid #edf1f5;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .medicine-name {
+            font-size: 21px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .pharmacy-name {
+            color: #1769aa;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .address {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        /* STATUS */
+
+        .status-area {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .status {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .confirmed {
+            background: #dff7e5;
+            color: #1b7a35;
+        }
+
+        .ready {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .collected {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .cancelled,
+        .expired {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .cancelled-by {
+            display: inline-block;
+            padding: 8px 12px;
+            background: #f8d7da;
+            color: #842029;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        /* PROGRESS TRACKER */
+
+        .tracker-wrapper {
+            margin-top: 28px;
+            padding: 22px 15px;
+            background: #f8fafc;
+            border-radius: 14px;
+            border: 1px solid #edf1f5;
+        }
+
+        .tracker-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 22px;
+        }
+
+        .tracker {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .tracker-line {
+            position: absolute;
+            top: 17px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: #dfe5eb;
+            z-index: 0;
+        }
+
+        .step {
+            position: relative;
+            z-index: 1;
+            width: 25%;
+            text-align: center;
+        }
+
+        .circle {
+            width: 35px;
+            height: 35px;
+            margin: 0 auto 9px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #dfe5eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #9aa4ad;
+        }
+
+        .step-label {
+            font-size: 12px;
+            color: #8a939b;
+            font-weight: bold;
+        }
+
+        .step.completed .circle {
+            background: #1769aa;
+            border-color: #1769aa;
+            color: white;
+        }
+
+        .step.completed .step-label {
+            color: #1769aa;
+        }
+
+        .step.current .circle {
+            background: white;
+            border-color: #1769aa;
+            color: #1769aa;
+            box-shadow: 0 0 0 5px rgba(23,105,170,0.10);
+        }
+
+        .step.current .step-label {
+            color: #1769aa;
+        }
+
+        /* CANCELLED TRACKER */
+
+        .cancelled-box {
+            margin-top: 25px;
+            padding: 16px;
+            border-radius: 12px;
+            background: #fff1f2;
+            border: 1px solid #f5c2c7;
+            color: #842029;
+            font-weight: bold;
+        }
+
+        /* DETAILS */
+
+        .details {
+            display: flex;
+            gap: 30px;
+            color: #555;
+            font-size: 14px;
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid #eee;
+        }
+
+        /* PRESCRIPTION */
+
+        .prescription-status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            background: #f8fafc;
+        }
+
+        .prescription-pending,
+        .prescription-approved,
+        .prescription-rejected,
+        .prescription-not-required {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        .prescription-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .prescription-approved {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .prescription-rejected {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .prescription-not-required {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .prescription-message {
+            margin-top: 10px;
+            color: #666;
+            font-size: 13px;
+            font-weight: normal;
+            line-height: 1.5;
+        }
+
+        /* UPLOAD */
+
+        .upload-prescription-form {
+            margin-top: 14px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e3e7eb;
+        }
+
+        .upload-prescription-form input[type="file"] {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 13px;
+            max-width: 100%;
+        }
+
+        .upload-prescription-btn {
+            padding: 9px 14px;
+            background: #1769aa;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .upload-prescription-btn:hover {
+            background: #12558a;
+        }
+
+        /* CANCEL BUTTON */
+
+        .cancel-btn {
+            margin-top: 20px;
+            padding: 10px 16px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .cancel-btn:hover {
+            background: #bb2d3b;
+        }
+
+        /* EMPTY */
+
+        .empty {
+            background: white;
+            padding: 50px;
+            text-align: center;
+            border-radius: 15px;
+            color: #666;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+        }
+
+        .empty h2 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .search-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 11px 18px;
+            background: #1769aa;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 650px) {
+
+            .navbar {
+                padding: 15px 20px;
+            }
+
+            .logo {
+                font-size: 21px;
+            }
+
+            .container {
+                margin-top: 25px;
+            }
+
+            .reservation-card {
+                padding: 20px;
+            }
+
+            .top {
+                flex-direction: column;
+            }
+
+            .status-area {
+                align-items: flex-start;
+            }
+
+            .details {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .tracker-wrapper {
+                padding: 18px 5px;
+            }
+
+            .step-label {
+                font-size: 10px;
+            }
+
+            .circle {
+                width: 31px;
+                height: 31px;
+                font-size: 12px;
+            }
+
+            .tracker-line {
+                top: 15px;
+                left: 10%;
+                right: 10%;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            MediLocate
+        </div>
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="back-link"
+        >
+            ← Dashboard
+        </a>
+
+    </nav>
+
+
+    <!-- MAIN -->
+
+    <div class="container">
+
+        <div class="heading">
+
+            <h1>
+                My Reservations
+            </h1>
+
+            <p>
+                Track the medicines you have requested from pharmacies.
+            </p>
+
+        </div>
+
+
+        {% if reservations %}
+
+            {% for reservation in reservations %}
+
+                <div class="reservation-card">
+
+                    <!-- TOP -->
+
+                    <div class="top">
+
+                        <div>
+
+                            <div class="medicine-name">
+                                {{ reservation.medicine_name }}
+                            </div>
+
+                            <div class="pharmacy-name">
+                                🏥 {{ reservation.pharmacy_name }}
+                            </div>
+
+                            <div class="address">
+                                📍 {{ reservation.address }}
+                            </div>
+
+                        </div>
+
+
+                        <!-- STATUS -->
+
+                        <div class="status-area">
+
+                            {% if reservation.status == "pending" %}
+
+                                <span class="status pending">
+                                    Pending
+                                </span>
+
+                            {% elif reservation.status == "confirmed" %}
+
+                                <span class="status confirmed">
+                                    Confirmed
+                                </span>
+
+                            {% elif reservation.status == "ready" %}
+
+                                <span class="status ready">
+                                    Ready for Collection
+                                </span>
+
+                            {% elif reservation.status == "collected" %}
+
+                                <span class="status collected">
+                                    Collected
+                                </span>
+
+                            {% elif reservation.status == "cancelled" %}
+
+                                <span class="status cancelled">
+                                    Cancelled
+                                </span>
+
+                                <div class="cancelled-by">
+
+                                    Cancelled by:
+
+                                    {% if reservation.cancelled_by == "customer" %}
+                                        You
+                                    {% elif reservation.cancelled_by == "pharmacy" %}
+                                        Pharmacy
+                                    {% elif reservation.cancelled_by == "admin" %}
+                                        Admin
+                                    {% else %}
+                                        Unknown
+                                    {% endif %}
+
+                                </div>
+
+                            {% elif reservation.status == "expired" %}
+
+                                <span class="status expired">
+                                    Expired
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PROGRESS TRACKER -->
+
+                    {% if reservation.status != "cancelled"
+                       and reservation.status != "expired" %}
+
+                        <div class="tracker-wrapper">
+
+                            <div class="tracker-title">
+                                Reservation Progress
+                            </div>
+
+                            <div class="tracker">
+
+                                <div class="tracker-line"></div>
+
+
+                                <!-- REQUESTED -->
+
+                                <div class="step completed">
+
+                                    <div class="circle">
+                                        ✓
+                                    </div>
+
+                                    <div class="step-label">
+                                        Requested
+                                    </div>
+
+                                </div>
+
+
+                                <!-- CONFIRMED -->
+
+                                <div class="step
+                                    {% if reservation.status == 'pending' %}
+                                        current
+                                    {% else %}
+                                        completed
+                                    {% endif %}
+                                ">
+
+                                    <div class="circle">
+
+                                        {% if reservation.status == "pending" %}
+                                            2
+                                        {% else %}
+                                            ✓
+                                        {% endif %}
+
+                                    </div>
+
+                                    <div class="step-label">
+                                        Confirmed
+                                    </div>
+
+                                </div>
+
+
+                                <!-- READY -->
+
+                                <div class="step
+                                    {% if reservation.status == 'confirmed' %}
+                                        current
+                                    {% elif reservation.status == 'ready'
+                                          or reservation.status == 'collected' %}
+                                        completed
+                                    {% endif %}
+                                ">
+
+                                    <div class="circle">
+
+                                        {% if reservation.status == "confirmed" %}
+                                            3
+                                        {% elif reservation.status == "ready"
+                                              or reservation.status == "collected" %}
+                                            ✓
+                                        {% else %}
+                                            3
+                                        {% endif %}
+
+                                    </div>
+
+                                    <div class="step-label">
+                                        Ready
+                                    </div>
+
+                                </div>
+
+
+                                <!-- COLLECTED -->
+
+                                <div class="step
+                                    {% if reservation.status == 'ready' %}
+                                        current
+                                    {% elif reservation.status == 'collected' %}
+                                        completed
+                                    {% endif %}
+                                ">
+
+                                    <div class="circle">
+
+                                        {% if reservation.status == "collected" %}
+                                            ✓
+                                        {% else %}
+                                            4
+                                        {% endif %}
+
+                                    </div>
+
+                                    <div class="step-label">
+                                        Collected
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="cancelled-box">
+
+                            {% if reservation.status == "cancelled" %}
+
+                                ❌ This reservation has been cancelled.
+
+                                {% if reservation.cancelled_by == "pharmacy" %}
+                                    The pharmacy cancelled this reservation.
+                                {% elif reservation.cancelled_by == "admin" %}
+                                    An administrator cancelled this reservation.
+                                {% elif reservation.cancelled_by == "customer" %}
+                                    You cancelled this reservation.
+                                {% endif %}
+
+                            {% elif reservation.status == "expired" %}
+
+                                ⏰ This reservation has expired.
+
+                            {% endif %}
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- DETAILS -->
+
+                    <div class="details">
+
+                        <div>
+
+                            Quantity:
+
+                            <strong>
+                                {{ reservation.quantity }}
+                            </strong>
+
+                        </div>
+
+                        <div>
+
+                            Requested:
+
+                            {{ reservation.created_at }}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PRESCRIPTION -->
+
+                    {% if reservation.prescription_required %}
+
+                        <div class="prescription-status">
+
+                            {% if reservation.status == "cancelled" %}
+
+                                <span class="prescription-not-required">
+                                    📄 Prescription: Review Not Required
+                                </span>
+
+
+                            {% elif reservation.prescription_status == "pending_review" %}
+
+                                <span class="prescription-pending">
+                                    📄 Prescription: Pending Review
+                                </span>
+
+                                <div class="prescription-message">
+                                    ✓ Prescription uploaded successfully.
+                                    Your prescription is waiting for pharmacy review.
+                                </div>
+
+
+                            {% elif reservation.prescription_status == "approved" %}
+
+                                <span class="prescription-approved">
+                                    📄 Prescription: Approved
+                                </span>
+
+                                <div class="prescription-message">
+                                    ✓ Your prescription has been approved by the pharmacy.
+                                </div>
+
+
+                            {% elif reservation.prescription_status == "rejected" %}
+
+                                <span class="prescription-rejected">
+                                    📄 Prescription: Rejected
+                                </span>
+
+                                <div class="prescription-message">
+                                    The pharmacy rejected your prescription.
+                                    Please upload a new prescription.
+                                </div>
+
+
+                                <!-- REPLACEMENT -->
+
+                                <form
+                                    action="{{ url_for(
+                                        'replace_prescription',
+                                        reservation_id=reservation.id
+                                    ) }}"
+                                    method="POST"
+                                    enctype="multipart/form-data"
+                                    class="upload-prescription-form"
+                                >
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input
+                                        type="file"
+                                        name="prescription_file"
+                                        accept=".pdf,.jpg,.jpeg,.png"
+                                        required
+                                    >
+
+                                    <button
+                                        type="submit"
+                                        class="upload-prescription-btn"
+                                    >
+                                        📤 Upload New Prescription
+                                    </button>
+
+                                </form>
+
+
+                            {% elif reservation.prescription_status == "not_required" %}
+
+                                <span class="prescription-not-required">
+                                    📄 Prescription: Not Required
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- CANCEL -->
+
+                    {% if reservation.status == "pending" %}
+
+                        <form
+                            action="{{ url_for(
+                                'cancel_reservation',
+                                reservation_id=reservation.id
+                            ) }}"
+                            method="POST"
+                            onsubmit="return confirm(
+                                'Are you sure you want to cancel this reservation?'
+                            );"
+                        >
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button
+                                type="submit"
+                                class="cancel-btn"
+                            >
+                                Cancel Reservation
+                            </button>
+
+                        </form>
+
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+
+        {% else %}
+
+            <!-- EMPTY -->
+
+            <div class="empty">
+
+                <h2>
+                    No Reservations Yet
+                </h2>
+
+                <p>
+                    You haven't reserved any medicines yet.
+                </p>
+
+                <a
+                    href="{{ url_for('search_medicine') }}"
+                    class="search-btn"
+                >
+                    Find a Medicine
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MediLocate | Find Medicines Near You</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <header class="navbar">
+
+        <a href="/" class="brand">
+            <span class="brand-icon">✚</span>
+            <span>MediLocate</span>
+        </a>
+
+        <nav class="nav-links">
+
+            <a href="#how-it-works">
+                How it works
+            </a>
+
+            <a href="#pharmacies">
+                Pharmacies
+            </a>
+
+            <a href="#for-pharmacies">
+                For pharmacies
+            </a>
+
+            <a href="#">
+                About
+            </a>
+
+        </nav>
+
+        <div class="nav-actions">
+
+            <a href="{{ url_for('login') }}" class="login-link">
+    Log in
+</a>
+
+            <a href="{{ url_for('register') }}"
+   class="primary-button small-button">
+    Get started
+</a>
+
+        </div>
+
+    </header>
+
+
+    <!-- ================= HERO ================= -->
+
+    <main>
+
+        <section class="hero">
+
+            <div class="hero-content">
+
+                <div class="eyebrow">
+                    <span class="status-dot"></span>
+                    Healthcare access, made simpler
+                </div>
+
+                <h1>
+                    Find the medicine you need.
+                    <span>Before you leave home.</span>
+                </h1>
+
+                <p class="hero-text">
+                    Search nearby pharmacies, check reported
+                    availability, and reserve your medicine
+                    before making the trip.
+                </p>
+
+
+                <!-- SEARCH -->
+
+                <div class="main-search">
+
+                    <span class="search-icon">⌕</span>
+
+                    <input
+                        type="text"
+                        placeholder="Search for a medicine..."
+                    >
+
+                    <button>
+                        Search
+                    </button>
+
+                </div>
+
+
+                <div class="location-row">
+
+                    <button class="location-button">
+                        📍 Use my location
+                    </button>
+
+                    <span>
+                        Find pharmacies near you
+                    </span>
+
+                </div>
+
+
+                <!-- TRUST -->
+
+                <div class="hero-trust">
+
+                    <div class="trust-item">
+                        <strong>Verified pharmacies</strong>
+                        <span>Registered businesses</span>
+                    </div>
+
+                    <div class="trust-divider"></div>
+
+                    <div class="trust-item">
+                        <strong>Recent availability</strong>
+                        <span>See when stock was updated</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- HERO VISUAL -->
+
+            <div class="hero-visual">
+
+                <div class="map-card">
+
+                    <div class="map-top">
+
+                        <span>
+                            Nearby pharmacies
+                        </span>
+
+                        <span class="live-badge">
+                            ● Live
+                        </span>
+
+                    </div>
+
+
+                    <div class="fake-map">
+
+                        <div class="map-line line-one"></div>
+                        <div class="map-line line-two"></div>
+                        <div class="map-line line-three"></div>
+
+
+                        <div class="map-pin pin-one">
+                            <span>🏪</span>
+                        </div>
+
+                        <div class="map-pin pin-two">
+                            <span>🏪</span>
+                        </div>
+
+                        <div class="map-pin pin-three active-pin">
+                            <span>📍</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="pharmacy-preview">
+
+                        <div class="pharmacy-avatar">
+                            🏪
+                        </div>
+
+                        <div class="pharmacy-info">
+
+                            <div class="pharmacy-name">
+                                Nearby Pharmacy
+                            </div>
+
+                            <div class="pharmacy-meta">
+                                1.2 km · Open now
+                            </div>
+
+                        </div>
+
+                        <div class="stock-badge">
+                            In stock
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="floating-card availability-card">
+
+                    <div class="floating-icon">
+                        ✓
+                    </div>
+
+                    <div>
+                        <strong>Availability updated</strong>
+                        <span>3 minutes ago</span>
+                    </div>
+
+                </div>
+
+
+                <div class="floating-card distance-card">
+
+                    <span class="distance-icon">
+                        ↗
+                    </span>
+
+                    <div>
+                        <strong>1.2 km</strong>
+                        <span>from your location</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= HOW IT WORKS ================= -->
+
+        <section class="how-section" id="how-it-works">
+
+            <div class="section-heading">
+
+                <span class="section-label">
+                    HOW IT WORKS
+                </span>
+
+                <h2>
+                    From search to pharmacy
+                    <span>in a few simple steps.</span>
+                </h2>
+
+                <p>
+                    MediLocate helps you make an informed trip
+                    instead of searching pharmacy by pharmacy.
+                </p>
+
+            </div>
+
+
+            <div class="steps">
+
+                <div class="step-card">
+
+                    <div class="step-number">
+                        01
+                    </div>
+
+                    <div class="step-icon">
+                        🔎
+                    </div>
+
+                    <h3>
+                        Search
+                    </h3>
+
+                    <p>
+                        Enter the medicine you're looking for
+                        and choose your location.
+                    </p>
+
+                </div>
+
+
+                <div class="step-connector"></div>
+
+
+                <div class="step-card">
+
+                    <div class="step-number">
+                        02
+                    </div>
+
+                    <div class="step-icon">
+                        📍
+                    </div>
+
+                    <h3>
+                        Compare
+                    </h3>
+
+                    <p>
+                        Explore nearby pharmacies and see
+                        recently reported availability.
+                    </p>
+
+                </div>
+
+
+                <div class="step-connector"></div>
+
+
+                <div class="step-card">
+
+                    <div class="step-number">
+                        03
+                    </div>
+
+                    <div class="step-icon">
+                        ✓
+                    </div>
+
+                    <h3>
+                        Reserve
+                    </h3>
+
+                    <p>
+                        Reserve available medicine and
+                        collect it from the pharmacy.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= PHARMACIES ================= -->
+
+        <section class="pharmacy-section" id="pharmacies">
+
+            <div class="section-heading pharmacy-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        NEARBY PHARMACIES
+                    </span>
+
+                    <h2>
+                        Know before you go.
+                    </h2>
+
+                </div>
+
+                <a href="#" class="text-link">
+                    Explore pharmacies →
+                </a>
+
+            </div>
+
+
+            <div class="pharmacy-grid">
+
+
+                <article class="pharmacy-card">
+
+                    <div class="card-top">
+
+                        <div class="pharmacy-logo">
+                            A
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Apollo Pharmacy
+                            </h3>
+
+                            <p>
+                                1.2 km · Open until 11 PM
+                            </p>
+
+                        </div>
+
+                        <span class="verified">
+                            ✓
+                        </span>
+
+                    </div>
+
+
+                    <div class="rating">
+                        ★ 4.6
+                        <span> · Pharmacy</span>
+                    </div>
+
+
+                    <div class="medicine-status">
+
+                        <div>
+                            <span class="stock-dot"></span>
+                            Paracetamol
+                        </div>
+
+                        <strong>
+                            Available
+                        </strong>
+
+                    </div>
+
+                    <div class="medicine-status">
+
+                        <div>
+                            <span class="stock-dot"></span>
+                            Cetirizine
+                        </div>
+
+                        <strong>
+                            Available
+                        </strong>
+
+                    </div>
+
+
+                    <a href="#" class="card-link">
+                        View pharmacy →
+                    </a>
+
+                </article>
+
+
+                <article class="pharmacy-card">
+
+                    <div class="card-top">
+
+                        <div class="pharmacy-logo second-logo">
+                            M
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                MedPlus
+                            </h3>
+
+                            <p>
+                                2.4 km · Open until 10 PM
+                            </p>
+
+                        </div>
+
+                        <span class="verified">
+                            ✓
+                        </span>
+
+                    </div>
+
+
+                    <div class="rating">
+                        ★ 4.4
+                        <span> · Pharmacy</span>
+                    </div>
+
+
+                    <div class="medicine-status">
+
+                        <div>
+                            <span class="stock-dot"></span>
+                            Paracetamol
+                        </div>
+
+                        <strong>
+                            Available
+                        </strong>
+
+                    </div>
+
+                    <div class="medicine-status">
+
+                        <div>
+                            <span class="stock-dot low"></span>
+                            Cetirizine
+                        </div>
+
+                        <strong>
+                            Limited
+                        </strong>
+
+                    </div>
+
+
+                    <a href="#" class="card-link">
+                        View pharmacy →
+                    </a>
+
+                </article>
+
+
+                <article class="pharmacy-card">
+
+                    <div class="card-top">
+
+                        <div class="pharmacy-logo third-logo">
+                            C
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                City Care Pharmacy
+                            </h3>
+
+                            <p>
+                                3.1 km · Open until 9 PM
+                            </p>
+
+                        </div>
+
+                        <span class="verified">
+                            ✓
+                        </span>
+
+                    </div>
+
+
+                    <div class="rating">
+                        ★ 4.7
+                        <span> · Pharmacy</span>
+                    </div>
+
+
+                    <div class="medicine-status">
+
+                        <div>
+                            <span class="stock-dot"></span>
+                            Paracetamol
+                        </div>
+
+                        <strong>
+                            Available
+                        </strong>
+
+                    </div>
+
+                    <div class="medicine-status">
+
+                        <div>
+                            <span class="stock-dot"></span>
+                            Cetirizine
+                        </div>
+
+                        <strong>
+                            Available
+                        </strong>
+
+                    </div>
+
+
+                    <a href="#" class="card-link">
+                        View pharmacy →
+                    </a>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= PHARMACY CTA ================= -->
+
+        <section class="business-section" id="for-pharmacies">
+
+            <div class="business-content">
+
+                <span class="section-label">
+                    FOR PHARMACIES
+                </span>
+
+                <h2>
+                    Make your inventory
+                    <span>easier to discover.</span>
+                </h2>
+
+                <p>
+                    Connect your pharmacy with people nearby,
+                    manage your medicine inventory, and handle
+                    reservations from one place.
+                </p>
+
+                <a href="#" class="business-button">
+                    Register your pharmacy →
+                </a>
+
+            </div>
+
+
+            <div class="dashboard-preview">
+
+                <div class="dashboard-header">
+                    <span>Inventory overview</span>
+                    <span>Today</span>
+                </div>
+
+                <div class="dashboard-row">
+
+                    <span>Paracetamol</span>
+
+                    <div class="progress">
+                        <div class="progress-fill"></div>
+                    </div>
+
+                    <strong>84</strong>
+
+                </div>
+
+                <div class="dashboard-row">
+
+                    <span>Cetirizine</span>
+
+                    <div class="progress">
+                        <div class="progress-fill medium"></div>
+                    </div>
+
+                    <strong>31</strong>
+
+                </div>
+
+                <div class="dashboard-row">
+
+                    <span>Azithromycin</span>
+
+                    <div class="progress">
+                        <div class="progress-fill low-fill"></div>
+                    </div>
+
+                    <strong>8</strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer>
+
+        <div class="footer-brand">
+
+            <a href="/" class="brand">
+                <span class="brand-icon">✚</span>
+                MediLocate
+            </a>
+
+            <p>
+                Making medicine access easier,
+                one search at a time.
+            </p>
+
+        </div>
+
+
+        <div class="footer-column">
+
+            <h4>Platform</h4>
+
+            <a href="#">Find medicines</a>
+            <a href="#">Pharmacies</a>
+            <a href="#">How it works</a>
+
+        </div>
+
+
+        <div class="footer-column">
+
+            <h4>For pharmacies</h4>
+
+            <a href="#">Register</a>
+            <a href="#">Pharmacy login</a>
+            <a href="#">Resources</a>
+
+        </div>
+
+
+        <div class="footer-column">
+
+            <h4>Company</h4>
+
+            <a href="#">About</a>
+            <a href="#">Contact</a>
+            <a href="#">Privacy</a>
+
+        </div>
+
+    </footer>
+
+
+</body>
+
+</html>

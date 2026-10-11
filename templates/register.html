@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Create Account | MediLocate</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/auth.css') }}">
+
+</head>
+
+
+<body>
+
+    <div class="auth-page">
+
+
+        <!-- LEFT SIDE -->
+
+        <section class="auth-intro">
+
+            <a href="/" class="auth-brand">
+
+                <span class="brand-icon">
+                    ✚
+                </span>
+
+                MediLocate
+
+            </a>
+
+
+            <div class="intro-content">
+
+                <span class="intro-label">
+                    JOIN MEDILOCATE
+                </span>
+
+                <h1>
+                    Healthcare access,
+                    made easier.
+                </h1>
+
+                <p>
+                    Create your account to find nearby
+                    pharmacies, check medicine availability,
+                    and manage your reservations.
+                </p>
+
+
+                <div class="intro-points">
+
+                    <div>
+                        <span>✓</span>
+                        Discover nearby pharmacies
+                    </div>
+
+                    <div>
+                        <span>✓</span>
+                        Check recent availability
+                    </div>
+
+                    <div>
+                        <span>✓</span>
+                        Reserve before you travel
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- RIGHT SIDE -->
+
+        <section class="auth-container">
+
+            <div class="auth-card">
+
+
+                <div class="auth-heading">
+
+                    <h2>
+                        Create your account
+                    </h2>
+
+                    <p>
+                        Choose how you want to use MediLocate.
+                    </p>
+
+                </div>
+
+
+                <!-- REGISTRATION FORM -->
+
+                <form
+                    method="POST"
+                    action="{{ url_for('register') }}"
+                    enctype="multipart/form-data"
+                >
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <!-- ACCOUNT TYPE -->
+
+                    <div class="account-types">
+
+
+                        <label class="account-option">
+
+                            <input
+                                type="radio"
+                                name="role"
+                                value="customer"
+                                checked
+                            >
+
+                            <div class="account-option-content">
+
+                                <div class="account-icon">
+                                    👤
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Customer
+                                    </strong>
+
+                                    <span>
+                                        Find and reserve medicines
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </label>
+
+
+                        <label class="account-option">
+
+                            <input
+                                type="radio"
+                                name="role"
+                                value="pharmacy"
+                            >
+
+                            <div class="account-option-content">
+
+                                <div class="account-icon">
+                                    🏪
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Pharmacy
+                                    </strong>
+
+                                    <span>
+                                        Manage medicines and reservations
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </label>
+
+
+                    </div>
+
+
+                    <div class="form-row">
+
+
+                        <div class="form-group">
+
+                            <label for="first_name">
+                                First name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="first_name"
+                                name="first_name"
+                                placeholder="First name"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="last_name">
+                                Last name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="last_name"
+                                name="last_name"
+                                placeholder="Last name"
+                                required
+                            >
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email address
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="you@example.com"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="phone">
+                            Phone number
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            placeholder="+91 XXXXX XXXXX"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="form-group">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Create a strong password"
+                            required
+                        >
+
+
+                        <!-- PASSWORD REQUIREMENTS -->
+
+                        <div id="password-requirements"
+                             style="margin-top: 10px;">
+
+                            <p id="length"
+                               class="requirement"
+                               style="margin: 4px 0;">
+                                ❌ At least 8 characters
+                            </p>
+
+                            <p id="uppercase"
+                               class="requirement"
+                               style="margin: 4px 0;">
+                                ❌ At least one uppercase letter
+                            </p>
+
+                            <p id="lowercase"
+                               class="requirement"
+                               style="margin: 4px 0;">
+                                ❌ At least one lowercase letter
+                            </p>
+
+                            <p id="number"
+                               class="requirement"
+                               style="margin: 4px 0;">
+                                ❌ At least one number
+                            </p>
+
+                            <p id="special"
+                               class="requirement"
+                               style="margin: 4px 0;">
+                                ❌ At least one special character
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- CONFIRM PASSWORD -->
+
+                    <div class="form-group">
+
+                        <label for="confirm_password">
+                            Confirm password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="confirm_password"
+                            name="confirm_password"
+                            placeholder="Confirm your password"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- PHARMACY INFORMATION -->
+
+                    <div
+                        id="pharmacy-fields"
+                        class="pharmacy-fields"
+                        style="display: none;"
+                    >
+
+
+                        <div class="form-section-title">
+
+                            Pharmacy information
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="pharmacy_name">
+                                Pharmacy name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="pharmacy_name"
+                                name="pharmacy_name"
+                                placeholder="Your pharmacy name"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="pharmacy_address">
+                                Pharmacy address
+                            </label>
+
+                            <textarea
+                                id="pharmacy_address"
+                                name="pharmacy_address"
+                                placeholder="Complete pharmacy address"
+                            ></textarea>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="license_number">
+                                License number
+                            </label>
+
+                            <input
+                                type="text"
+                                id="license_number"
+                                name="license_number"
+                                placeholder="Pharmacy license number"
+                            >
+
+                        </div>
+
+
+                        <!-- LICENSE DOCUMENT -->
+
+                        <div class="form-group">
+
+                            <label for="license_document">
+                                Pharmacy License Document
+                            </label>
+
+                            <input
+                                type="file"
+                                id="license_document"
+                                name="license_document"
+                                accept=".pdf,.jpg,.jpeg,.png"
+                            >
+
+                            <small style="
+                                display: block;
+                                margin-top: 8px;
+                                color: #666;
+                                line-height: 1.5;
+                            ">
+
+                                Upload your pharmacy license document.
+
+                                Accepted formats:
+                                PDF, JPG, JPEG, PNG.
+
+                            </small>
+
+                        </div>
+
+
+                        <!-- PHARMACY LOCATION -->
+
+                        <div class="form-section-title">
+
+                            Pharmacy location
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="latitude">
+                                Latitude
+                            </label>
+
+                            <input
+                                type="text"
+                                id="latitude"
+                                name="latitude"
+                                placeholder="Click Use My Location"
+                                readonly
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="longitude">
+                                Longitude
+                            </label>
+
+                            <input
+                                type="text"
+                                id="longitude"
+                                name="longitude"
+                                placeholder="Click Use My Location"
+                                readonly
+                            >
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            id="location-button"
+                            class="auth-button"
+                        >
+
+                            📍 Use My Location
+
+                        </button>
+
+
+                        <p
+                            id="location-message"
+                            style="margin-top: 10px;"
+                        ></p>
+
+
+                        <div class="verification-note">
+
+                            🔐 Pharmacy accounts require
+                            verification before they can
+                            manage inventory.
+
+                        </div>
+
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="auth-button"
+                    >
+
+                        Create account
+
+                    </button>
+
+
+                </form>
+
+
+                <div class="register-prompt">
+
+                    Already have an account?
+
+                    <a href="{{ url_for('login') }}">
+                        Sign in
+                    </a>
+
+                </div>
+
+
+                <p class="terms">
+
+                    By creating an account, you agree to our
+                    Terms of Service and Privacy Policy.
+
+                </p>
+
+
+            </div>
+
+        </section>
+
+
+    </div>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script>
+
+
+        // -----------------------------
+        // PASSWORD REQUIREMENTS
+        // -----------------------------
+
+        const passwordInput =
+            document.getElementById("password");
+
+
+        passwordInput.addEventListener(
+            "input",
+            function () {
+
+                const password =
+                    passwordInput.value;
+
+
+                document.getElementById("length")
+                    .textContent =
+                    password.length >= 8
+                        ? "✅ At least 8 characters"
+                        : "❌ At least 8 characters";
+
+
+                document.getElementById("uppercase")
+                    .textContent =
+                    /[A-Z]/.test(password)
+                        ? "✅ At least one uppercase letter"
+                        : "❌ At least one uppercase letter";
+
+
+                document.getElementById("lowercase")
+                    .textContent =
+                    /[a-z]/.test(password)
+                        ? "✅ At least one lowercase letter"
+                        : "❌ At least one lowercase letter";
+
+
+                document.getElementById("number")
+                    .textContent =
+                    /[0-9]/.test(password)
+                        ? "✅ At least one number"
+                        : "❌ At least one number";
+
+
+                document.getElementById("special")
+                    .textContent =
+                    /[^A-Za-z0-9]/.test(password)
+                        ? "✅ At least one special character"
+                        : "❌ At least one special character";
+
+            }
+        );
+
+
+        // -----------------------------
+        // ACCOUNT TYPE
+        // -----------------------------
+
+        const accountTypes =
+            document.querySelectorAll(
+                'input[name="role"]'
+            );
+
+
+        const pharmacyFields =
+            document.getElementById(
+                "pharmacy-fields"
+            );
+
+
+        accountTypes.forEach(
+            function (option) {
+
+                option.addEventListener(
+                    "change",
+                    function () {
+
+                        if (this.value === "pharmacy") {
+
+                            pharmacyFields.style.display =
+                                "block";
+
+                        } else {
+
+                            pharmacyFields.style.display =
+                                "none";
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+        // -----------------------------
+        // USE MY LOCATION
+        // -----------------------------
+
+        const locationButton =
+            document.getElementById(
+                "location-button"
+            );
+
+
+        const latitudeInput =
+            document.getElementById(
+                "latitude"
+            );
+
+
+        const longitudeInput =
+            document.getElementById(
+                "longitude"
+            );
+
+
+        const locationMessage =
+            document.getElementById(
+                "location-message"
+            );
+
+
+        locationButton.addEventListener(
+            "click",
+            function () {
+
+                if (!navigator.geolocation) {
+
+                    locationMessage.textContent =
+                        "Geolocation is not supported by your browser.";
+
+                    return;
+
+                }
+
+
+                locationMessage.textContent =
+                    "Getting your location...";
+
+
+                navigator.geolocation.getCurrentPosition(
+
+                    function (position) {
+
+                        const latitude =
+                            position.coords.latitude;
+
+
+                        const longitude =
+                            position.coords.longitude;
+
+
+                        latitudeInput.value =
+                            latitude.toFixed(7);
+
+
+                        longitudeInput.value =
+                            longitude.toFixed(7);
+
+
+                        locationMessage.textContent =
+                            "✓ Location detected successfully.";
+
+                    },
+
+
+                    function (error) {
+
+                        if (error.code === 1) {
+
+                            locationMessage.textContent =
+                                "Location permission was denied.";
+
+                        } else if (error.code === 2) {
+
+                            locationMessage.textContent =
+                                "Location information is unavailable.";
+
+                        } else if (error.code === 3) {
+
+                            locationMessage.textContent =
+                                "Location request timed out.";
+
+                        } else {
+
+                            locationMessage.textContent =
+                                "Unable to get your location.";
+
+                        }
+
+                    }
+
+                );
+
+            }
+
+        );
+
+
+    </script>
+
+
+</body>
+
+</html>

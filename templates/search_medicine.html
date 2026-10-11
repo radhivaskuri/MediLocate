@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MediLocate - Search Medicine</title>
+
+    <!-- Leaflet CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #222;
+        }
+
+        /* NAVBAR */
+
+        .navbar {
+            background: white;
+            padding: 18px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+            color: #1769aa;
+        }
+
+        .dashboard-link {
+            text-decoration: none;
+            color: #1769aa;
+            font-weight: bold;
+        }
+
+        /* MAIN */
+
+        .container {
+            max-width: 1100px;
+            margin: 45px auto;
+            padding: 0 20px;
+        }
+
+        .heading {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .heading h1 {
+            font-size: 34px;
+            margin-bottom: 10px;
+        }
+
+        .heading p {
+            color: #666;
+        }
+
+        /* LOCATION INFO */
+
+        .location-info {
+            background: #eaf4ff;
+            border: 1px solid #c9e3fa;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            color: #1769aa;
+            font-size: 14px;
+        }
+
+        .location-warning {
+            background: #fff3cd;
+            border: 1px solid #ffe69c;
+            color: #856404;
+        }
+
+        /* SEARCH BOX */
+
+        .search-box {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+            margin-bottom: 35px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 12px;
+        }
+
+        .search-form input {
+            flex: 1;
+            padding: 14px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .search-form button {
+            padding: 14px 25px;
+            border: none;
+            border-radius: 8px;
+            background: #1769aa;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .search-form button:hover {
+            background: #125589;
+        }
+
+        /* MAP */
+
+        .map-section {
+            margin-bottom: 35px;
+        }
+
+        .map-section h2 {
+            margin-bottom: 15px;
+        }
+
+        #map {
+            width: 100%;
+            height: 450px;
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        /* USER LOCATION ICON */
+
+        .user-location-icon {
+            width: 28px;
+            height: 28px;
+            background: red;
+            border: 4px solid white;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .user-location-icon::after {
+            content: "";
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            top: 6px;
+            left: 6px;
+        }
+
+        /* RESULTS */
+
+        .results-title {
+            margin-bottom: 20px;
+        }
+
+        .result-card {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .medicine-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .generic-name {
+            color: #777;
+            margin-bottom: 18px;
+        }
+
+        .prescription-warning {
+            display: inline-block;
+            margin-top: 8px;
+            margin-bottom: 15px;
+            padding: 7px 12px;
+            border-radius: 8px;
+            background: #fff3cd;
+            color: #856404;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .pharmacy-name {
+            font-size: 17px;
+            font-weight: bold;
+            color: #1769aa;
+            margin-bottom: 8px;
+        }
+
+        .address {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .distance {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 7px 12px;
+            border-radius: 8px;
+            background: #eef7ee;
+            color: #267a36;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .distance-not-available {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #888;
+            font-size: 13px;
+        }
+
+        .result-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .stock-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stock {
+            font-weight: bold;
+            color: #444;
+        }
+
+        .status {
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .available {
+            background: #dff7e5;
+            color: #1b7a35;
+        }
+
+        .limited {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .out {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .view-btn {
+            display: inline-block;
+            padding: 10px 16px;
+            background: #1769aa;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .view-btn:hover {
+            background: #125589;
+        }
+
+        /* NO RESULTS */
+
+        .no-results {
+            background: white;
+            padding: 35px;
+            text-align: center;
+            border-radius: 14px;
+            color: #666;
+        }
+
+        .no-results h3 {
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 650px) {
+
+            .navbar {
+                padding: 15px 20px;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            .result-bottom {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .stock-info {
+                flex-wrap: wrap;
+            }
+
+            #map {
+                height: 350px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- NAVBAR -->
+
+<nav class="navbar">
+
+    <div class="logo">
+        MediLocate
+    </div>
+
+    <a
+        href="{{ url_for('dashboard') }}"
+        class="dashboard-link"
+    >
+        ← Dashboard
+    </a>
+
+</nav>
+
+
+<!-- MAIN -->
+
+<div class="container">
+
+
+    <!-- HEADING -->
+
+    <div class="heading">
+
+        <h1>
+            Find Your Medicine
+        </h1>
+
+        <p>
+            Search for medicines and see which pharmacies have them available.
+        </p>
+
+    </div>
+
+
+    <!-- LOCATION STATUS -->
+
+    {% if session.get('customer_latitude') and session.get('customer_longitude') %}
+
+        <div class="location-info">
+
+            📍 Your current location is being used.
+            Search results will show pharmacy distances.
+
+        </div>
+
+    {% else %}
+
+        <div class="location-info location-warning">
+
+            📍 Current location is not available.
+
+            Please go to the Dashboard and click
+            <strong>Use My Current Location</strong>
+            before searching if you want distance and map information.
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- SEARCH FORM -->
+
+    <div class="search-box">
+
+        <form
+            method="POST"
+            action="{{ url_for('search_medicine') }}"
+            class="search-form"
+        >
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input
+                type="text"
+                name="medicine"
+                placeholder="Search medicine name..."
+                value="{{ search }}"
+                required
+            >
+
+            <button type="submit">
+                🔎 Search
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- MAP DATA -->
+
+    {% if search and results and session.get('customer_latitude') and session.get('customer_longitude') %}
+
+        <div
+            id="map-data"
+            data-customer-latitude="{{ session.get('customer_latitude') }}"
+            data-customer-longitude="{{ session.get('customer_longitude') }}"
+        >
+
+            {% for item in results %}
+
+                {% if item.latitude is not none and item.longitude is not none %}
+
+                    <div
+                        class="pharmacy-data"
+                        data-id="{{ item.pharmacy_id }}"
+                        data-name="{{ item.pharmacy_name | e }}"
+                        data-address="{{ item.address | e }}"
+                        data-latitude="{{ item.latitude }}"
+                        data-longitude="{{ item.longitude }}"
+                        data-distance="{{ item.distance if item.distance is not none else '' }}"
+                        data-url="{{ url_for('pharmacy_details', pharmacy_id=item.pharmacy_id) }}"
+                    ></div>
+
+                {% endif %}
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- MAP -->
+
+        <div class="map-section">
+
+            <h2>
+                🗺️ Pharmacies With "{{ search }}"
+            </h2>
+
+            <div id="map"></div>
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- SEARCH RESULTS -->
+
+    {% if search %}
+
+        <h2 class="results-title">
+            Search Results for "{{ search }}"
+        </h2>
+
+
+        {% if results %}
+
+            {% for item in results %}
+
+                <div class="result-card">
+
+
+                    <div class="medicine-name">
+                        {{ item.medicine_name }}
+                    </div>
+
+
+                    {% if item.generic_name %}
+
+                        <div class="generic-name">
+                            Generic: {{ item.generic_name }}
+                        </div>
+
+                    {% endif %}
+
+
+                    {% if item.prescription_required %}
+
+                        <div class="prescription-warning">
+                            📄 Prescription Required
+                        </div>
+
+                    {% endif %}
+
+
+                    <div class="pharmacy-name">
+                        🏥 {{ item.pharmacy_name }}
+                    </div>
+
+
+                    <div class="address">
+                        📍 {{ item.address }}
+                    </div>
+
+
+                    {% if item.distance is not none %}
+
+                        <div class="distance">
+                            📏 {{ item.distance }} km away
+                        </div>
+
+                    {% else %}
+
+                        <div class="distance-not-available">
+                            📏 Distance unavailable
+                        </div>
+
+                    {% endif %}
+
+
+                    <div class="result-bottom">
+
+
+                        <div class="stock-info">
+
+                            <span class="stock">
+                                Stock: {{ item.quantity }}
+                            </span>
+
+
+                            {% if item.availability_status == "available" %}
+
+                                <span class="status available">
+                                    Available
+                                </span>
+
+
+                            {% elif item.availability_status == "limited" %}
+
+                                <span class="status limited">
+                                    Limited
+                                </span>
+
+
+                            {% else %}
+
+                                <span class="status out">
+                                    Out of Stock
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <a
+                            href="{{ url_for(
+                                'pharmacy_details',
+                                pharmacy_id=item.pharmacy_id
+                            ) }}"
+                            class="view-btn"
+                        >
+                            View Pharmacy →
+                        </a>
+
+
+                    </div>
+
+
+                </div>
+
+            {% endfor %}
+
+
+        {% else %}
+
+
+            <div class="no-results">
+
+                <h3>
+                    No pharmacies found
+                </h3>
+
+                <p>
+                    We couldn't find this medicine in the registered pharmacies.
+                </p>
+
+            </div>
+
+
+        {% endif %}
+
+    {% endif %}
+
+
+</div>
+
+
+<!-- Leaflet JS -->
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+
+<script>
+
+    /*
+     * GET MAP DATA
+     *
+     * All Flask/Jinja code is outside this JavaScript block.
+     * This prevents VS Code from showing false JavaScript errors.
+     */
+
+    const mapData = document.getElementById("map-data");
+
+
+    if (mapData) {
+
+        const customerLatitude = parseFloat(
+            mapData.dataset.customerLatitude
+        );
+
+        const customerLongitude = parseFloat(
+            mapData.dataset.customerLongitude
+        );
+
+
+        /*
+         * GET PHARMACY DATA
+         */
+
+        const pharmacyElements =
+            document.querySelectorAll(".pharmacy-data");
+
+
+        const pharmacies = [];
+
+
+        pharmacyElements.forEach(function(element) {
+
+            const latitude =
+                parseFloat(element.dataset.latitude);
+
+            const longitude =
+                parseFloat(element.dataset.longitude);
+
+            const distanceValue =
+                element.dataset.distance;
+
+
+            pharmacies.push({
+
+                id: element.dataset.id,
+
+                name: element.dataset.name,
+
+                address: element.dataset.address,
+
+                latitude: latitude,
+
+                longitude: longitude,
+
+                distance:
+                    distanceValue !== ""
+                        ? parseFloat(distanceValue)
+                        : null,
+
+                url: element.dataset.url
+
+            });
+
+        });
+
+
+        /*
+         * CREATE MAP
+         */
+
+        const map = L.map("map").setView(
+            [
+                customerLatitude,
+                customerLongitude
+            ],
+            13
+        );
+
+
+        /*
+         * OPENSTREETMAP
+         */
+
+        L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                maxZoom: 19,
+
+                attribution:
+                    "&copy; OpenStreetMap contributors"
+            }
+        ).addTo(map);
+
+
+        /*
+         * RED USER LOCATION ICON
+         */
+
+        const userIcon = L.divIcon({
+
+            className: "user-location-marker",
+
+            html:
+                '<div class="user-location-icon"></div>',
+
+            iconSize: [28, 28],
+
+            iconAnchor: [14, 28]
+
+        });
+
+
+        /*
+         * USER MARKER
+         */
+
+        const userMarker = L.marker(
+            [
+                customerLatitude,
+                customerLongitude
+            ],
+            {
+                icon: userIcon
+            }
+        ).addTo(map);
+
+
+        userMarker.bindPopup(
+            "<strong>🔴 You are here</strong>"
+        );
+
+
+        /*
+         * USER LOCATION CIRCLE
+         */
+
+        L.circle(
+            [
+                customerLatitude,
+                customerLongitude
+            ],
+            {
+                radius: 100,
+
+                color: "red",
+
+                fillColor: "red",
+
+                fillOpacity: 0.08
+
+            }
+        ).addTo(map);
+
+
+        /*
+         * ADD PHARMACY MARKERS
+         */
+
+        pharmacies.forEach(function(pharmacy) {
+
+
+            const pharmacyMarker = L.marker(
+                [
+                    pharmacy.latitude,
+                    pharmacy.longitude
+                ]
+            ).addTo(map);
+
+
+            /*
+             * DISTANCE TEXT
+             */
+
+            let distanceText = "";
+
+            if (pharmacy.distance !== null) {
+
+                distanceText =
+                    "📏 " +
+                    pharmacy.distance +
+                    " km away";
+
+            }
+
+
+            /*
+             * PHARMACY POPUP
+             */
+
+            pharmacyMarker.bindPopup(
+
+                "<strong>🏥 " +
+                pharmacy.name +
+                "</strong>" +
+
+                "<br><br>" +
+
+                "📍 " +
+                pharmacy.address +
+
+                "<br><br>" +
+
+                distanceText +
+
+                "<br><br>" +
+
+                '<a href="' +
+                pharmacy.url +
+                '">' +
+                "View Pharmacy →" +
+                "</a>"
+
+            );
+
+
+            /*
+             * GET ROAD ROUTE
+             */
+
+            const routeUrl =
+                "https://router.project-osrm.org/route/v1/driving/" +
+                pharmacy.longitude +
+                "," +
+                pharmacy.latitude +
+                ";" +
+                customerLongitude +
+                "," +
+                customerLatitude +
+                "?overview=full&geometries=geojson";
+
+
+            fetch(routeUrl)
+
+                .then(function(response) {
+
+                    return response.json();
+
+                })
+
+
+                .then(function(data) {
+
+
+                    if (
+                        !data.routes ||
+                        data.routes.length === 0
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    /*
+                     * CONVERT ROUTE COORDINATES
+                     */
+
+                    const coordinates =
+                        data.routes[0]
+                            .geometry
+                            .coordinates
+                            .map(function(coordinate) {
+
+                                return [
+                                    coordinate[1],
+                                    coordinate[0]
+                                ];
+
+                            });
+
+
+                    /*
+                     * DRAW ROUTE
+                     */
+
+                    L.polyline(
+                        coordinates,
+                        {
+                            color: "red",
+
+                            weight: 5,
+
+                            opacity: 0.75
+                        }
+                    ).addTo(map);
+
+
+                })
+
+
+                .catch(function(error) {
+
+                    console.error(
+                        "Route error:",
+                        error
+                    );
+
+                });
+
+        });
+
+
+        /*
+         * FIX MAP SIZE
+         */
+
+        setTimeout(function() {
+
+            map.invalidateSize();
+
+        }, 300);
+
+    }
+
+</script>
+
+
+</body>
+
+</html>

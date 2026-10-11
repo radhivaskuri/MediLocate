@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MediLocate - Inventory</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #222;
+        }
+
+        .navbar {
+            background: white;
+            padding: 18px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+            color: #1769aa;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: #1769aa;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+        }
+
+        .card h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        button {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .add-btn {
+            background: #1769aa;
+            color: white;
+        }
+
+        .add-btn:hover {
+            background: #125589;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f7f9fc;
+        }
+
+        .status {
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .available {
+            background: #dff7e5;
+            color: #1b7a35;
+        }
+
+        .limited {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .out {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .update-btn {
+            background: #1769aa;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .update-form {
+            display: flex;
+            gap: 6px;
+        }
+
+        .update-form input {
+            width: 80px;
+            padding: 8px;
+        }
+
+        .update-form button {
+            padding: 8px 12px;
+        }
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                padding: 15px 20px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            table {
+                font-size: 13px;
+            }
+
+            th,
+            td {
+                padding: 10px;
+            }
+
+            .actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar">
+
+    <div class="logo">
+        MediLocate
+    </div>
+
+    <a href="{{ url_for('pharmacy_dashboard') }}" class="back-btn">
+        ← Dashboard
+    </a>
+
+</nav>
+
+
+<div class="container">
+
+    <div class="header">
+
+        <h1>Inventory Management</h1>
+
+        <p>
+            Manage the medicines available at your pharmacy.
+        </p>
+
+    </div>
+
+
+    <!-- ADD MEDICINE -->
+
+    <div class="card">
+
+        <h2>Add Medicine</h2>
+
+        <form method="POST" action="{{ url_for('add_inventory') }}"">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label>Medicine</label>
+
+                    <select name="medicine_id" required>
+
+                        <option value="">
+                            Select Medicine
+                        </option>
+
+                        {% for medicine in medicines %}
+
+                        <option value="{{ medicine.id }}">
+                            {{ medicine.name }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Quantity</label>
+
+                    <input
+                        type="number"
+                        name="quantity"
+                        min="0"
+                        required
+                        placeholder="Enter quantity"
+                    >
+
+                </div>
+
+
+                <button type="submit" class="add-btn">
+                    + Add Medicine
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- CURRENT INVENTORY -->
+
+    <div class="card">
+
+        <h2>Current Inventory</h2>
+
+        {% if inventory %}
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Medicine</th>
+
+                    <th>Generic Name</th>
+
+                    <th>Quantity</th>
+
+                    <th>Status</th>
+
+                    <th>Actions</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for item in inventory %}
+
+                <tr>
+
+                    <td>
+                        <strong>{{ item.name }}</strong>
+                    </td>
+
+                    <td>
+                        {{ item.generic_name }}
+                    </td>
+
+                    <td>
+                        {{ item.quantity }}
+                    </td>
+
+                    <td>
+
+                        {% if item.availability_status == "available" %}
+
+                            <span class="status available">
+                                Available
+                            </span>
+
+                        {% elif item.availability_status == "limited" %}
+
+                            <span class="status limited">
+                                Limited
+                            </span>
+
+                        {% else %}
+
+                            <span class="status out">
+                                Out of Stock
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        <div class="actions">
+
+                            <!-- UPDATE -->
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('update_inventory', inventory_id=item.id) }}"
+                                class="update-form"
+                            >
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input
+                                    type="number"
+                                    name="quantity"
+                                    value="{{ item.quantity }}"
+                                    min="0"
+                                    required
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="update-btn"
+                                >
+                                    Update
+                                </button>
+
+                            </form>
+
+
+                            <!-- DELETE -->
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('delete_inventory', inventory_id=item.id) }}"
+                                onsubmit="return confirm('Are you sure you want to remove this medicine?');"
+                            >
+                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button
+                                    type="submit"
+                                    class="delete-btn"
+                                >
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        {% else %}
+
+        <p>
+            No medicines have been added to your inventory yet.
+        </p>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,522 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Inter, Arial, sans-serif;
+    color: #102a36;
+}
+
+
+/* ================= PAGE ================= */
+
+.auth-page {
+    min-height: 100vh;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+
+/* ================= LEFT ================= */
+
+.auth-intro {
+    position: relative;
+
+    padding: 55px 9%;
+
+    background:
+        radial-gradient(
+            circle at 80% 20%,
+            #dff3f5,
+            transparent 40%
+        ),
+        #f3fafb;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: #102a36;
+
+    text-decoration: none;
+
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.brand-icon {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #176b87;
+
+    color: white;
+
+    border-radius: 9px;
+}
+
+.intro-content {
+    max-width: 540px;
+
+    margin: auto 0;
+}
+
+.intro-label {
+    color: #176b87;
+
+    font-size: 11px;
+
+    letter-spacing: 2px;
+
+    font-weight: 800;
+}
+
+.intro-content h1 {
+    margin-top: 18px;
+
+    font-size: 54px;
+
+    line-height: 1.05;
+
+    letter-spacing: -2px;
+}
+
+.intro-content p {
+    margin-top: 24px;
+
+    max-width: 470px;
+
+    color: #5e747c;
+
+    font-size: 16px;
+
+    line-height: 1.7;
+}
+
+.intro-points {
+    margin-top: 35px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 14px;
+
+    color: #49616b;
+
+    font-size: 13px;
+}
+
+.intro-points div {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+}
+
+.intro-points span {
+    width: 22px;
+    height: 22px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 50%;
+
+    background: #e0f4eb;
+
+    color: #2c9b70;
+
+    font-weight: bold;
+}
+
+
+/* ================= RIGHT ================= */
+
+.auth-container {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 50px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 430px;
+}
+
+.mobile-brand {
+    display: none;
+}
+
+.auth-heading {
+    margin-bottom: 35px;
+}
+
+.auth-heading h2 {
+    font-size: 32px;
+
+    letter-spacing: -1px;
+}
+
+.auth-heading p {
+    margin-top: 8px;
+
+    color: #72858d;
+
+    font-size: 14px;
+}
+
+
+/* ================= FORM ================= */
+
+.form-group {
+    margin-bottom: 22px;
+}
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+.label-row {
+    display: flex;
+
+    justify-content: space-between;
+}
+
+.label-row a {
+    color: #176b87;
+
+    text-decoration: none;
+
+    font-size: 12px;
+}
+
+.form-group input {
+    width: 100%;
+
+    padding: 14px 15px;
+
+    border: 1px solid #d5e1e4;
+
+    border-radius: 9px;
+
+    outline: none;
+
+    font-size: 14px;
+
+    transition: .2s;
+}
+
+.form-group input:focus {
+    border-color: #176b87;
+
+    box-shadow:
+        0 0 0 3px rgba(23, 107, 135, .08);
+}
+
+
+/* ================= BUTTON ================= */
+
+.auth-button {
+    width: 100%;
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #176b87;
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+.auth-button:hover {
+    background: #105268;
+}
+
+
+/* ================= DIVIDER ================= */
+
+.divider {
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin: 30px 0;
+
+    color: #a0afb3;
+
+    font-size: 12px;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+
+    flex: 1;
+
+    height: 1px;
+
+    background: #e4ebed;
+}
+
+
+/* ================= REGISTER ================= */
+
+.register-prompt {
+    text-align: center;
+
+    color: #667b83;
+
+    font-size: 13px;
+}
+
+.register-prompt a {
+    color: #176b87;
+
+    text-decoration: none;
+
+    font-weight: 800;
+}
+
+.terms {
+    margin-top: 28px;
+
+    text-align: center;
+
+    color: #9aa9ad;
+
+    font-size: 10px;
+
+    line-height: 1.6;
+}
+
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 800px) {
+
+    .auth-page {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-intro {
+        display: none;
+    }
+
+    .auth-container {
+        min-height: 100vh;
+
+        padding: 30px;
+    }
+
+    .mobile-brand {
+        display: block;
+
+        margin-bottom: 50px;
+
+        color: #176b87;
+
+        font-size: 22px;
+
+        font-weight: 800;
+    }
+}
+/* ================= ACCOUNT TYPES ================= */
+
+.account-types {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 12px;
+
+    margin-bottom: 25px;
+}
+
+.account-option {
+    cursor: pointer;
+}
+
+.account-option input {
+    display: none;
+}
+
+.account-option-content {
+    min-height: 105px;
+
+    padding: 15px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    border: 1px solid #dce7e9;
+
+    border-radius: 11px;
+
+    transition: .2s;
+}
+
+.account-option-content:hover {
+    border-color: #176b87;
+}
+
+.account-option input:checked
++ .account-option-content {
+    border-color: #176b87;
+
+    background: #f0f9fa;
+
+    box-shadow:
+        0 0 0 2px rgba(23, 107, 135, .08);
+}
+
+.account-icon {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background: #e5f3f5;
+}
+
+.account-option-content strong {
+    display: block;
+
+    font-size: 13px;
+}
+
+.account-option-content span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #7a8b91;
+
+    font-size: 10px;
+}
+
+
+/* ================= FORM ROW ================= */
+
+.form-row {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 14px;
+}
+
+
+/* ================= PHARMACY FIELDS ================= */
+
+.pharmacy-fields {
+    margin-top: 10px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #e5ecee;
+}
+
+.form-section-title {
+    margin-bottom: 20px;
+
+    font-size: 14px;
+
+    font-weight: 800;
+}
+
+.form-group textarea {
+    width: 100%;
+
+    min-height: 80px;
+
+    padding: 13px;
+
+    border: 1px solid #d5e1e4;
+
+    border-radius: 9px;
+
+    outline: none;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    resize: vertical;
+}
+
+.form-group textarea:focus {
+    border-color: #176b87;
+
+    box-shadow:
+        0 0 0 3px rgba(23, 107, 135, .08);
+}
+
+.verification-note {
+    margin-bottom: 20px;
+
+    padding: 12px;
+
+    border-radius: 8px;
+
+    background: #f5f8f9;
+
+    color: #647980;
+
+    font-size: 11px;
+
+    line-height: 1.5;
+}
+
+
+/* ================= REGISTER PAGE ================= */
+
+.auth-container {
+    overflow-y: auto;
+}
+
+.auth-card {
+    padding-top: 25px;
+    padding-bottom: 25px;
+}

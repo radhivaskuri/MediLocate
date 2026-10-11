@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard | MediLocate</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Leaflet CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <style>
+
+        .dashboard {
+            padding: 60px 8%;
+        }
+
+        .welcome {
+            margin-bottom: 40px;
+        }
+
+        .welcome h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .welcome p {
+            color: #666;
+            font-size: 17px;
+        }
+
+        /* DASHBOARD CARDS */
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .dashboard-card {
+            padding: 30px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .dashboard-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .dashboard-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .dashboard-card a {
+            display: inline-block;
+            margin-top: 15px;
+            text-decoration: none;
+        }
+
+        /* LOCATION */
+
+        .location-card {
+            margin-top: 30px;
+            padding: 30px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .location-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .location-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .location-button {
+            margin-top: 15px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .location-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .location-details {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .location-details p {
+            margin: 6px 0;
+        }
+
+        .location-message {
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        /* MAP */
+
+        .map-section {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .map-section h2 {
+            margin-bottom: 20px;
+        }
+
+        #map {
+            width: 100%;
+            height: 500px;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        /* CUSTOM USER MARKER */
+
+        .user-location-icon {
+            width: 28px;
+            height: 28px;
+            background: red;
+            border: 4px solid white;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .user-location-icon::after {
+            content: "";
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            top: 6px;
+            left: 6px;
+        }
+
+        /* NEARBY PHARMACIES */
+
+        .nearby-section {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .nearby-section h2 {
+            margin-bottom: 20px;
+        }
+
+        .nearby-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .pharmacy-card {
+            padding: 25px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .pharmacy-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .pharmacy-card p {
+            color: #666;
+            margin: 7px 0;
+            line-height: 1.5;
+        }
+
+        .distance {
+            font-weight: bold;
+            margin-top: 12px;
+        }
+
+        .view-pharmacy {
+            display: inline-block;
+            margin-top: 15px;
+            text-decoration: none;
+        }
+
+        .no-pharmacies {
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            color: #666;
+        }
+
+        /* LOGOUT */
+
+        .logout {
+            display: inline-block;
+            margin-top: 35px;
+            padding: 12px 22px;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 1000px) {
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nearby-list {
+                grid-template-columns: 1fr 1fr;
+            }
+
+        }
+
+        @media (max-width: 800px) {
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nearby-list {
+                grid-template-columns: 1fr;
+            }
+
+            #map {
+                height: 400px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<main class="dashboard">
+
+
+    <!-- WELCOME -->
+
+    <div class="welcome">
+
+        <h1>
+            Welcome, {{ first_name }} 👋
+        </h1>
+
+        <p>
+            You are logged in as
+            <strong>{{ role }}</strong>.
+        </p>
+
+    </div>
+
+
+    <!-- DASHBOARD CARDS -->
+
+    <div class="dashboard-grid">
+
+
+        <div class="dashboard-card">
+
+            <h3>
+                🔍 Find Medicines
+            </h3>
+
+            <p>
+                Search for medicines and discover
+                pharmacies where they are available.
+            </p>
+
+            <a href="{{ url_for('search_medicine') }}">
+                Find Medicines
+            </a>
+
+        </div>
+
+
+        <div class="dashboard-card">
+
+            <h3>
+                📍 Nearby Pharmacies
+            </h3>
+
+            <p>
+                Discover pharmacies near your
+                current location and check their availability.
+            </p>
+
+            <a href="#location-section">
+                Use Current Location →
+            </a>
+
+        </div>
+
+
+        <div class="dashboard-card">
+
+            <h3>
+                📦 My Reservations
+            </h3>
+
+            <p>
+                View and manage the medicines
+                you have reserved.
+            </p>
+
+            <a href="{{ url_for('my_reservations') }}">
+                My Reservations
+            </a>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- CURRENT LOCATION -->
+
+    <div
+        class="location-card"
+        id="location-section"
+    >
+
+        <h3>
+            📍 Your Current Location
+        </h3>
+
+        <p>
+            Use your current location to find
+            pharmacies near you.
+        </p>
+
+
+        <button
+            type="button"
+            id="location-button"
+            class="location-button"
+        >
+            📍 Use My Current Location
+        </button>
+
+
+        <div
+            id="location-details"
+            class="location-details"
+        >
+
+            <p>
+                <strong>Latitude:</strong>
+                <span id="latitude"></span>
+            </p>
+
+            <p>
+                <strong>Longitude:</strong>
+                <span id="longitude"></span>
+            </p>
+
+        </div>
+
+
+        <p
+            id="location-message"
+            class="location-message"
+        ></p>
+
+    </div>
+
+
+    <!-- MAP -->
+
+    <div
+        id="map-section"
+        class="map-section"
+    >
+
+        <h2>
+            🗺️ Pharmacies Near You
+        </h2>
+
+        <div id="map"></div>
+
+    </div>
+
+
+    <!-- NEARBY PHARMACIES -->
+
+    <div
+        id="nearby-section"
+        class="nearby-section"
+    >
+
+        <h2>
+            🏪 Nearby Pharmacies
+        </h2>
+
+        <div
+            id="nearby-list"
+            class="nearby-list"
+        ></div>
+
+    </div>
+
+
+    <!-- LOGOUT -->
+
+    <a
+        href="{{ url_for('logout') }}"
+        class="logout"
+    >
+        Logout
+    </a>
+
+
+</main>
+
+
+<!-- Leaflet JS -->
+
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+
+<script>
+
+    const locationButton =
+        document.getElementById("location-button");
+
+    const latitudeElement =
+        document.getElementById("latitude");
+
+    const longitudeElement =
+        document.getElementById("longitude");
+
+    const locationDetails =
+        document.getElementById("location-details");
+
+    const locationMessage =
+        document.getElementById("location-message");
+
+    const nearbySection =
+        document.getElementById("nearby-section");
+
+    const nearbyList =
+        document.getElementById("nearby-list");
+
+    const mapSection =
+        document.getElementById("map-section");
+
+
+    let map = null;
+
+    let routeLayers = [];
+
+
+    /*
+     * CREATE MAP
+     */
+
+    function createMap(
+        customerLatitude,
+        customerLongitude,
+        pharmacies
+    ) {
+
+        mapSection.style.display = "block";
+
+
+        /*
+         * Create map
+         */
+
+        if (map === null) {
+
+            map = L.map("map").setView(
+                [
+                    customerLatitude,
+                    customerLongitude
+                ],
+                14
+            );
+
+
+            L.tileLayer(
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+                    maxZoom: 19,
+                    attribution:
+                        '&copy; OpenStreetMap contributors'
+                }
+            ).addTo(map);
+
+        }
+        else {
+
+            map.setView(
+                [
+                    customerLatitude,
+                    customerLongitude
+                ],
+                14
+            );
+
+        }
+
+
+        /*
+         * Remove old markers and routes
+         */
+
+        map.eachLayer(function(layer) {
+
+            if (
+                layer instanceof L.Marker ||
+                layer instanceof L.Circle ||
+                layer instanceof L.Polyline
+            ) {
+
+                map.removeLayer(layer);
+
+            }
+
+        });
+
+
+        routeLayers = [];
+
+
+        /*
+         * RED USER LOCATION ICON
+         */
+
+        const userIcon =
+            L.divIcon({
+
+                className:
+                    "user-location-marker",
+
+                html:
+                    `
+                    <div class="user-location-icon"></div>
+                    `,
+
+                iconSize: [28, 28],
+
+                iconAnchor: [14, 28]
+
+            });
+
+
+        /*
+         * USER MARKER
+         */
+
+        const userMarker =
+            L.marker(
+                [
+                    customerLatitude,
+                    customerLongitude
+                ],
+                {
+                    icon: userIcon
+                }
+            ).addTo(map);
+
+
+        userMarker.bindPopup(
+            "<strong>🔴 You are here</strong>"
+        );
+
+
+        /*
+         * LOCATION ACCURACY CIRCLE
+         */
+
+        L.circle(
+            [
+                customerLatitude,
+                customerLongitude
+            ],
+            {
+                radius: 100,
+                color: "red",
+                fillColor: "red",
+                fillOpacity: 0.08
+            }
+        ).addTo(map);
+
+
+        /*
+         * PHARMACY MARKERS
+         */
+
+        pharmacies.forEach(
+            function(pharmacy) {
+
+                if (
+                    pharmacy.latitude === null ||
+                    pharmacy.longitude === null
+                ) {
+
+                    return;
+
+                }
+
+
+                const pharmacyMarker =
+                    L.marker(
+                        [
+                            pharmacy.latitude,
+                            pharmacy.longitude
+                        ]
+                    ).addTo(map);
+
+
+                pharmacyMarker.bindPopup(`
+
+                    <strong>
+                        🏥 ${pharmacy.name}
+                    </strong>
+
+                    <br><br>
+
+                    📍 ${pharmacy.address}
+
+                    <br>
+
+                    📏 ${pharmacy.distance} km away
+
+                    <br><br>
+
+                    <a
+                        href="/pharmacy/${pharmacy.id}"
+                    >
+                        View Pharmacy →
+                    </a>
+
+                `);
+
+
+                /*
+                 * Draw road route
+                 */
+
+                drawRoute(
+                    customerLatitude,
+                    customerLongitude,
+                    pharmacy.latitude,
+                    pharmacy.longitude
+                );
+
+            }
+        );
+
+
+        /*
+         * Fix map display
+         */
+
+        setTimeout(
+            function() {
+
+                map.invalidateSize();
+
+            },
+            300
+        );
+
+    }
+
+
+    /*
+     * DRAW ROAD ROUTE
+     */
+
+    function drawRoute(
+        startLatitude,
+        startLongitude,
+        endLatitude,
+        endLongitude
+    ) {
+
+        const routeUrl =
+            "https://router.project-osrm.org/route/v1/driving/"
+            + startLongitude
+            + ","
+            + startLatitude
+            + ";"
+            + endLongitude
+            + ","
+            + endLatitude
+            + "?overview=full&geometries=geojson";
+
+
+        fetch(routeUrl)
+
+        .then(
+            function(response) {
+
+                return response.json();
+
+            }
+        )
+
+        .then(
+            function(data) {
+
+
+                if (
+                    !data.routes ||
+                    data.routes.length === 0
+                ) {
+
+                    return;
+
+                }
+
+
+                const routeCoordinates =
+                    data.routes[0]
+                        .geometry
+                        .coordinates
+                        .map(
+                            function(coordinate) {
+
+                                return [
+                                    coordinate[1],
+                                    coordinate[0]
+                                ];
+
+                            }
+                        );
+
+
+                const routeLine =
+                    L.polyline(
+                        routeCoordinates,
+                        {
+                            color: "red",
+                            weight: 5,
+                            opacity: 0.75
+                        }
+                    ).addTo(map);
+
+
+                routeLayers.push(routeLine);
+
+            }
+        )
+
+        .catch(
+            function(error) {
+
+                console.error(
+                    "Route error:",
+                    error
+                );
+
+            }
+        );
+
+    }
+
+
+    /*
+     * GET CURRENT LOCATION
+     */
+
+    locationButton.addEventListener(
+        "click",
+        function() {
+
+
+            if (!navigator.geolocation) {
+
+                locationMessage.textContent =
+                    "Geolocation is not supported by your browser.";
+
+                return;
+
+            }
+
+
+            locationMessage.textContent =
+                "Getting your current location...";
+
+
+            locationButton.disabled = true;
+
+
+            navigator.geolocation.getCurrentPosition(
+
+                function(position) {
+
+
+                    const latitude =
+                        position.coords.latitude;
+
+                    const longitude =
+                        position.coords.longitude;
+
+
+                    /*
+                     * Display coordinates
+                     */
+
+                    latitudeElement.textContent =
+                        latitude.toFixed(7);
+
+                    longitudeElement.textContent =
+                        longitude.toFixed(7);
+
+
+                    locationDetails.style.display =
+                        "block";
+
+
+                    locationMessage.textContent =
+                        "Location detected. Finding nearby pharmacies...";
+
+
+                    /*
+                     * Send location to Flask
+                     */
+
+                    fetch(
+                        "{{ url_for('nearby_pharmacies') }}",
+                        {
+
+                            method: "POST",
+
+                            headers: {
+    "Content-Type": "application/json",
+    "X-CSRFToken": "{{ csrf_token() }}"
+},
+
+                            body: JSON.stringify({
+
+                                latitude: latitude,
+
+                                longitude: longitude
+
+                            })
+
+                        }
+                    )
+
+
+                    .then(
+                        function(response) {
+
+                            return response.json();
+
+                        }
+                    )
+
+
+                    .then(
+                        function(data) {
+
+
+                            if (data.error) {
+
+                                locationMessage.textContent =
+                                    data.error;
+
+                                locationButton.disabled =
+                                    false;
+
+                                return;
+
+                            }
+
+
+                            nearbyList.innerHTML = "";
+
+
+                            /*
+                             * NO PHARMACIES
+                             */
+
+                            if (
+                                !data.pharmacies ||
+                                data.pharmacies.length === 0
+                            ) {
+
+                                nearbyList.innerHTML = `
+
+                                    <div class="no-pharmacies">
+
+                                        No pharmacies with
+                                        location information
+                                        were found.
+
+                                    </div>
+
+                                `;
+
+
+                                nearbySection.style.display =
+                                    "block";
+
+
+                                locationMessage.textContent =
+                                    "✓ Location detected, but no pharmacies were found.";
+
+
+                                locationButton.disabled =
+                                    false;
+
+
+                                return;
+
+                            }
+
+
+                            /*
+                             * CREATE MAP
+                             */
+
+                            createMap(
+                                latitude,
+                                longitude,
+                                data.pharmacies
+                            );
+
+
+                            /*
+                             * DISPLAY PHARMACY CARDS
+                             */
+
+                            data.pharmacies.forEach(
+                                function(pharmacy) {
+
+
+                                    const pharmacyCard =
+                                        document.createElement(
+                                            "div"
+                                        );
+
+
+                                    pharmacyCard.className =
+                                        "pharmacy-card";
+
+
+                                    pharmacyCard.innerHTML = `
+
+                                        <h3>
+                                            🏥 ${pharmacy.name}
+                                        </h3>
+
+                                        <p>
+                                            📍 ${pharmacy.address}
+                                        </p>
+
+                                        <p class="distance">
+                                            📏 ${pharmacy.distance}
+                                            km away
+                                        </p>
+
+                                        <a
+                                            href="/pharmacy/${pharmacy.id}"
+                                            class="view-pharmacy"
+                                        >
+                                            View Pharmacy →
+                                        </a>
+
+                                    `;
+
+
+                                    nearbyList.appendChild(
+                                        pharmacyCard
+                                    );
+
+                                }
+                            );
+
+
+                            nearbySection.style.display =
+                                "block";
+
+
+                            locationMessage.textContent =
+                                "✓ Location detected successfully. "
+                                + data.pharmacies.length
+                                + " pharmacies found.";
+
+
+                            locationButton.disabled =
+                                false;
+
+                        }
+                    )
+
+
+                    .catch(
+                        function(error) {
+
+                            console.error(
+                                "Nearby pharmacy error:",
+                                error
+                            );
+
+
+                            locationMessage.textContent =
+                                "Unable to find nearby pharmacies.";
+
+
+                            locationButton.disabled =
+                                false;
+
+                        }
+                    );
+
+                },
+
+
+                /*
+                 * LOCATION ERROR
+                 */
+
+                function(error) {
+
+                    locationButton.disabled =
+                        false;
+
+
+                    if (error.code === 1) {
+
+                        locationMessage.textContent =
+                            "Location permission was denied.";
+
+                    }
+
+                    else if (error.code === 2) {
+
+                        locationMessage.textContent =
+                            "Your location is currently unavailable.";
+
+                    }
+
+                    else if (error.code === 3) {
+
+                        locationMessage.textContent =
+                            "Location request timed out.";
+
+                    }
+
+                    else {
+
+                        locationMessage.textContent =
+                            "Unable to get your current location.";
+
+                    }
+
+                }
+
+            );
+
+        }
+
+    );
+
+</script>
+
+
+</body>
+
+</html>
